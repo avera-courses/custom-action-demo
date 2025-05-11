@@ -5,6 +5,10 @@ inputs:
     description: "Usar cache de dependências"
     required: false
     default: "true"
+outputs:
+  test_success:
+    description: "Indica se os testes foram executados com sucesso"
+    value: ${{ steps.test.outcome == 'success' }}
 runs:
   using: "composite"
   steps:
@@ -30,5 +34,6 @@ runs:
       shell: bash
       # Executa os testes do projeto NPM
     - name: Run Tests
+      id: test
       run: npm test
       shell: bash
