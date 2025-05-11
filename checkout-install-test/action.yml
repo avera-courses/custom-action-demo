@@ -1,0 +1,27 @@
+name: "Checkout, Install and Test"
+description: "Faz o checkout do repositório, instala as dependências e executa os testes"
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      # pega o diretório do cache do npm
+    - name: Get NPM Cache Directory
+      id: npm-cache-dir
+      shell: bash
+      run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+
+    - uses: actions/cache@v4
+      id: npm-cache
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.dir }}
+        # pega o hash do package-lock.json por menos que seja a modificação, evitando deprecação de dependencias
+        key: npm-cache-dir-${{ hashFiles('**/package-lock.json') }}
+      # Instala as dependências do projeto NPM
+    - name: Install Dependencies
+      run: npm install
+      shell: bash
+      # Executa os testes do projeto NPM
+    - name: Run Tests
+      run: npm test
+      shell: bash
